@@ -20,7 +20,18 @@ function booksController(Book){
     }
 
     Book.find(query, (err, books) => {
-      return err ? res.send(err) : res.json(books)
+      if(err) {
+        return res.send(err);
+      }
+
+      const returnBooks = books.map((book) => {
+        const newBook = book.toJSON();
+        newBook.links = {};
+        newBook.links.self = `http://${req.headers.host}/api/books/${book._id}`;
+        return newBook;
+      });
+
+      return res.json(returnBooks)
     });
   }
 

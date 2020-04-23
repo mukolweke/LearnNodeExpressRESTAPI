@@ -26,7 +26,16 @@ function routes(Book) {
   })
 
   bookRouter.route('/books/:bookId')
-    .get((req, res) => res.json(req.book))
+    .get((req, res) => {
+
+      const returnBook = req.book.toJSON();
+
+      returnBook.links = {};
+      const genre = req.book.genre.replace(' ', '%20');
+      returnBook.links.FilterByThisGenre = `http://${req.headers.host}/api/books/?genre=${genre}`;
+      returnBook.links.AllBooks = `http://${req.headers.host}/api/books/`;
+      res.json(returnBook)
+    })
     .put((req, res) => {
       const { book } = req;
 
@@ -35,25 +44,25 @@ function routes(Book) {
       book.genre = req.body.genre;
       book.read = req.body.read;
 
-      req.book.save((err)=>{
+      req.book.save((err) => {
         return err ? res.send(err) : res.json(book);
       });
     })
     .patch((req, res) => {
       const { book } = req;
-      
-      if(req.body._id){
+
+      if (req.body._id) {
         delete req.body._id;
       }
 
-      Object.entries(req.body).forEach((item)=>{
+      Object.entries(req.body).forEach((item) => {
         const key = item[0];
         const value = item[1];
 
         book[key] = value;
       })
 
-      req.book.save((err)=>{
+      req.book.save((err) => {
         return err ? res.send(err) : res.json(book);
       });
     })
@@ -62,7 +71,7 @@ function routes(Book) {
         return err ? res.send(err) : res.sendStatus(204);
       })
     });
-  return bookRouter; 
+  return bookRouter;
 }
 
 
