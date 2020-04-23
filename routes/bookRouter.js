@@ -72,6 +72,11 @@ function routes(Book) {
       req.book.save((err)=>{
         return err ? res.send(err) : res.json(book);
       });
+    })
+    .delete((req, res) => {
+      req.book.remove((err) => {
+        return err ? res.send(err) : res.sendStatus(204);
+      })
     });
   return bookRouter; 
 }
